@@ -7,11 +7,16 @@
   <link rel=stylesheet type=text/css href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap.min.css" media="all">
   <!--<link rel=stylesheet type=text/css href="../_lib/bootstrap.min.css" media="all">-->
   <style>
+
+  body {
+    font-family: monospace, sans-serif;
+  }
+
   .axis text {
-    font: 10px sans-serif;
+    font-size: 14px;
   }
   .chartTitle {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
     text-anchor: middle; 
   }
@@ -47,23 +52,22 @@
   .viewport .extent {
     fill: green;
   }
-  .well {
-    padding-top: 0px;
-    padding-bottom: 0px;
+  #viewDiv {
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
   }
   </style>
 <body>
 
-<div style="max-width: 900px; max-height: 400px; padding: 10px">
-
-  <div class="well">
-    <h4>D3 Based Real Time Chart with Multiple Data Streams 
-  </div>
-  <input id="debug" type="checkbox" name="debug" value="debug" style="margin-bottom: 10px" /> Debug
-  <input id="halt" type="checkbox" name="halt" value="halt" style="margin-bottom: 10px" /> Halt
+<div>
+  <!-- <div class="well">
+    <h4>D3 Based Real Time Chart with Multiple Data Streams</h4> 
+  </div> -->
 
   <div id="viewDiv"></div>
-
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
@@ -72,18 +76,23 @@
 <!--<script src="../_lib/d3.min.js"></script>-->
 <script src="/realTimeChart.js"></script>
 <script>
-'use strict';
 
 const categroies = [];
 // create the real time chart
+
+var chartDiv = document.getElementById("viewDiv");
+
+var width = chartDiv.clientWidth;
+var height = chartDiv.clientHeight;
+
 var chart = realTimeChartMulti()
     .title("Campaigns in live")
     .yTitle("Campaigns")
     .xTitle("Time")
     .yDomain(categroies) // initial y domain (note array)
     .border(true)
-    .width(900)
-    .height(350);
+    .width(width)
+    .height(height);
 
 // invoke the chart
 var chartDiv = d3.select("#viewDiv").append("div")
@@ -119,7 +128,7 @@ var timeScale = d3.scale.linear()
 var normal = d3.random.normal(meanMs, dev);
 
 // define color scale
-var color = d3.scale.category10();
+var color = d3.scale.category20c();
 
 // in a normal use case, real time data would arrive through the network or some other mechanism
 var d = -1;
