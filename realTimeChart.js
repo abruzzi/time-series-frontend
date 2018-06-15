@@ -79,11 +79,11 @@ function realTimeChartMulti() {
 
     // create chart background
     main.append("rect")
+        .attr("class", "chartBackground")
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", width)
-        .attr("height", height)
-        .style("fill", "#f5f5f5");
+        .attr("height", height);
 
     // note that two groups are created here, the latter assigned to barG;
     // the former will contain a clip path to constrain objects to the chart area; 
@@ -152,12 +152,12 @@ function realTimeChartMulti() {
 
     // add nav background
     nav.append("rect")
+        .attr("class", "navBackground")
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", width)
         .attr("height", heightNav)
-        .style("fill", "#F5F5F5")
-        .style("shape-rendering", "crispEdges")
+        .style("shape-rendering", "geometricPrecision")
         .attr("transform", "translate(0, 0)");
 
     // add group to data items
@@ -275,96 +275,25 @@ function realTimeChartMulti() {
 
       // add items
       updateSel.enter()
-          .append(function(d) { 
-            if (debug) { console.log("d", JSON.stringify(d)); }
-            if (d.type == undefined) console.error(JSON.stringify(d))
-            var type = d.type || "circle";
-            var node = document.createElementNS("http://www.w3.org/2000/svg", type);
-            return node; 
-          })
+          .append("circle")
           .attr("class", "bar")
+          .style("shape-rendering", "geometricPrecision")
           .attr("id", function() { 
             return "bar-" + barId++; 
           });
 
       // update items; added items are now part of the update selection
       updateSel
-          .attr("x", function(d) { 
-            var retVal = null;
-            switch (getTagName(this)) {
-              case "rect":
-                var size = d.size || 6;
-                retVal = Math.round(x(d.time) - size / 2);
-                break;
-              default:
-            }
-            return retVal; 
-          })
-          .attr("y", function(d) { 
-            var retVal = null;
-            switch (getTagName(this)) {
-              case "rect":
-                var size = d.size || 6;
-                retVal = y(d.category) - size / 2;
-                break;
-              default:
-            }
-            return retVal; 
-          })
           .attr("cx", function(d) { 
-            var retVal = null;
-            switch (getTagName(this)) {
-              case "circle":
-                retVal = Math.round(x(d.time));
-                break;
-              default:
-            }
-            return retVal; 
+            return Math.round(x(d.time)); 
           })
-          .attr("cy", function(d) { 
-            var retVal = null;
-            switch (getTagName(this)) {
-              case "circle":
-                retVal = y(d.category);
-                break;
-              default:
-            }
-            return retVal; 
+          .attr("cy", function(d) {
+            return y(d.category); 
           })
           .attr("r", function(d) { 
-            var retVal = null;
-            switch (getTagName(this)) {
-              case "circle":
-                retVal = d.size / 2;
-                break;
-              default:
-            }
-            return retVal; 
-          })
-          .attr("width", function(d) {
-            var retVal = null;
-            switch (getTagName(this)) {
-              case "rect":
-                retVal = d.size;
-                break;
-              default:
-            }
-            return retVal; 
-          })
-          .attr("height", function(d) { 
-            var retVal = null;
-            switch (getTagName(this)) {
-              case "rect":
-                retVal = d.size; 
-                break;
-              default:
-            }
-            return retVal; 
+            return d.size; 
           })
           .style("fill", function(d) { return d.color || "black"; })
-          //.style("stroke", "orange")
-          //.style("stroke-width", "1px")
-          //.style("stroke-opacity", 0.8)
           .style("fill-opacity", function(d) { return d.opacity || 1; });
 
       // create update selection for the nav chart, by applying data
@@ -377,7 +306,7 @@ function realTimeChartMulti() {
       // add items
       updateSelNav.enter().append("circle")
           .attr("r", 1)
-          .attr("fill", "black")
+          .attr("fill", "#FFF670")
 
       // added items now part of update selection; set coordinates of points
       updateSelNav

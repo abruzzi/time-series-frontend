@@ -99,10 +99,10 @@
 					.attr("class", "circleWrapper")
 					.style("isolation", "isolate");
 
-			function runInfinity() {
+			function drawIt() {
 
 				//Create new particles
-				for (var j = 0; j < Math.round(Math.random()*16); j++) spawn(infinityPath[counter].x, infinityPath[counter].y);
+				spawn(infinityPath[counter].x, infinityPath[counter].y);
 
 				//Remove non-alive particles
 				particles = particles.filter(function(d) { return d.alive; });
@@ -138,8 +138,20 @@
 
 			}//runInfinity
 
-			//Create an interval that runs along the infinity path
-			var loopInfinity = setInterval(runInfinity , 50);
+
+			var ws = new WebSocket("ws://localhost:8080");
+
+			ws.onopen = function() {
+			  console.log('connected');
+			};
+
+			ws.onmessage = function (evt) {
+			  drawIt();
+			};
+
+			ws.onclose = function() { 
+			  console.log('closed');
+			};
 
 			///////////////////////////////////////////////////////////////////////////
 			/////////////// Functions to create and move the particles ////////////////

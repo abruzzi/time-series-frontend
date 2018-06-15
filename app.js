@@ -11,7 +11,7 @@ var chart = realTimeChartMulti()
     .yTitle("Campaigns")
     .xTitle("Time")
     .yDomain(categroies) // initial y domain (note array)
-    .border(true)
+    .border(false)
     .width(width)
     .height(height);
 
@@ -20,8 +20,9 @@ var chartDiv = d3.select("#viewDiv").append("div")
     .attr("id", "chartDiv")
     .call(chart);
 
-// define color scale
-var color = d3.scale.category20c();
+var color = d3.scale.linear()
+    .domain([1, 10])
+    .range(["#4F8E42", "#CBEF31"]);
 
 var ws = new WebSocket("ws://localhost:8080");
 
@@ -31,25 +32,25 @@ ws.onopen = function() {
 
 ws.onmessage = function (evt) { 
   const event = JSON.parse(evt.data);
-  categroies.push(event.campaign);
+  categroies.push(_.truncate(event.campaign, { 'length': 8 }));
   const campaigns = _.uniq(categroies);
-
-  console.log(campaigns.length);
 
   chart.yDomain(campaigns);
   chart.yDomain().forEach(function(cat, i) {
     var now = new Date(event.date);
 
+    var mills = event.mills * 200;
+
     const obj = {
       time: now,
-      color: color(Math.round(Math.random() * campaigns.length)),
+      color: color(mills),
       opacity: 1,
-      category: event.campaign,
+      category: _.truncate(event.campaign, { 'length': 8}),
       type: "circle",
-      size: event.mills * 500,
+      size: mills,
     }
 
-    chart.datum(obj);      
+    chart.datum(obj);
   });
 
 };
@@ -57,3 +58,10 @@ ws.onmessage = function (evt) {
 ws.onclose = function() { 
   console.log('closed');
 };
+
+document.addEventListener("DOMContentLoaded", function(event) {
+  var button = document.getElementById('stop');
+  button.addEventListener('click', () => {
+    chart.halt(true);
+  });      
+});
